@@ -1,6 +1,6 @@
+import 'dotenv/config';
 import express from 'express';
 import { createServer } from 'http';
-import dotenv from 'dotenv';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import cron from 'node-cron';
@@ -21,8 +21,7 @@ import savedReplyRoutes from './routes/savedReplyRoutes.js';
 import ticketTemplateRoutes from './routes/ticketTemplateRoutes.js';
 import surveyRoutes from './routes/surveyRoutes.js';
 import ticketLockRoutes from './routes/ticketLockRoutes.js';
-
-dotenv.config();
+import passport from "./config/passport.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -30,6 +29,7 @@ const httpServer = createServer(app);
 connectDB();
 
 initializeSocket(httpServer);
+app.use(passport.initialize());
 
 app.use(cors({
   origin: process.env.FRONTEND_URL || 'http://localhost:5173',
@@ -68,7 +68,7 @@ cron.schedule('*/2 * * * *', () => {
   cleanupExpiredLocks();
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 httpServer.listen(PORT, () => {
   console.log(`Server running in ${process.env.NODE_ENV} mode on port ${PORT}`);
